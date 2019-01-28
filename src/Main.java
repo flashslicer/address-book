@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 public class Main extends JFrame {
     JFrame jf = new JFrame();
     public Main()
@@ -23,19 +25,41 @@ public class Main extends JFrame {
         
         
         constraints.gridy=2;
-        addressBook.add(deleteContacts,constraints);
+        addressBook.add(updateContacts,constraints);
         
         
         constraints.gridy=3;
+        addressBook.add(showContacts,constraints);
+        
+        constraints.gridy=4;
         addressBook.add(exitButton,constraints);
         
         
+        updateContacts.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                    DeleteContacts dc = new DeleteContacts();
+                    dc.setVisible(true);
+            }
+        });
         addNewContact.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                DBConnection db = new DBConnection();
+                db.createTable();
                 AddContacts add = new AddContacts();
                 add.setVisible(true);
+            }
+        });
+        
+        showContacts.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ShowTableContacts sh = new ShowTableContacts();
+                sh.setVisible(true);
             }
         });
         
@@ -43,7 +67,21 @@ public class Main extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                try {
+                    Connection conn = DriverManager.getConnection("jdbc:derby:;shutdown=true");
+                } catch (SQLException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 System.exit(0);
+            }
+        });
+        
+        searchContacts.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                SearchContacts sc = new SearchContacts();
+                sc.setVisible(true);
             }
         });
         
@@ -72,6 +110,7 @@ public class Main extends JFrame {
     
     private JButton addNewContact = new JButton("New Contacts");
     private JButton searchContacts = new JButton("Search Contacts");
-    private JButton deleteContacts = new JButton("Delete Contacts");
+    private JButton updateContacts = new JButton("Update or Delete Contacts");
     private JButton exitButton = new JButton("Exit");
+    private JButton showContacts = new JButton("Show all contacts");
 }
